@@ -17,6 +17,8 @@ const newUserController = require('./controllers/newUser');
 const loginController = require("./controllers/login");
 const loginUserController = require('./controllers/loginUser');
 const storePost = require('./middleware/createPost')
+const redirectIfAuthenticated = require('./middleware/redirectIfAuthenticated')
+
 
 const app = new express();
 
@@ -52,10 +54,10 @@ app.get("/", homePageController);
 app.get("/post/:id", getPostController);
 app.get("/posts/new", auth, newPostController);
 app.post("/posts/create", createPostController);
-app.get("/auth/register", newUserController);
-app.post("/users/register", createUserController);
-app.get('/auth/login', loginController);
-app.post('/users/login', loginUserController);
+app.get("/auth/register", redirectIfAuthenticated, newUserController);
+app.post("/users/register", redirectIfAuthenticated, createUserController);
+app.get('/auth/login', redirectIfAuthenticated, loginController);
+app.post('/users/login', redirectIfAuthenticated, loginUserController);
 
 app.listen(4000, () => {
   console.log("App listening on port 4000");
