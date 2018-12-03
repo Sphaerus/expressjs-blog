@@ -53,7 +53,7 @@ app.use('/posts/store', storePost)
 app.get("/", homePageController);
 app.get("/post/:id", getPostController);
 app.get("/posts/new", auth, newPostController);
-app.post("/posts/create", createPostController);
+app.post("/posts/create", auth, createPostController);
 app.get("/auth/register", redirectIfAuthenticated, newUserController);
 app.post("/users/register", redirectIfAuthenticated, createUserController);
 app.get('/auth/login', redirectIfAuthenticated, loginController);
