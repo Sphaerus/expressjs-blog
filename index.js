@@ -5,7 +5,8 @@ const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const expressSession = require('express-session');
 const connectMongo = require('connect-mongo');
-
+const auth = require("./middleware/auth");
+const connectFlash = require("connect-flash");
 
 const newPostController = require('./controllers/newPost')
 const homePageController = require('./controllers/homePage')
@@ -15,6 +16,7 @@ const createUserController = require('./controllers/createUser');
 const newUserController = require('./controllers/newUser');
 const loginController = require("./controllers/login");
 const loginUserController = require('./controllers/loginUser');
+const storePost = require('./middleware/createPost')
 
 const app = new express();
 
@@ -42,15 +44,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSession({
     secret: 'secret'
 }));
-
-const storePost = require('./middleware/createPost')
+app.use(connectFlash());
 
 app.use('/posts/store', storePost)
 
 app.get("/", homePageController);
 app.get("/post/:id", getPostController);
-app.get("/posts/new", newPostController);
-app.post("/posts/create", newPostController);
+app.get("/posts/new", auth, newPostController);
+app.post("/posts/create", createPostController);
 app.get("/auth/register", newUserController);
 app.post("/users/register", createUserController);
 app.get('/auth/login', loginController);
