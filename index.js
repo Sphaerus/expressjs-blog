@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+const expressSession = require('express-session');
 
 const newPostController = require('./controllers/newPost')
 const homePageController = require('./controllers/homePage')
@@ -10,7 +11,8 @@ const createPostController = require('./controllers/createPost')
 const getPostController = require('./controllers/getPost')
 const createUserController = require('./controllers/createUser');
 const newUserController = require('./controllers/newUser');
-
+const loginController = require("./controllers/login");
+const loginUserController = require('./controllers/loginUser');
 
 const app = new express();
 
@@ -26,6 +28,10 @@ app.set('views', __dirname + '/views');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(expressSession({
+    secret: 'secret'
+}));
+
 const storePost = require('./middleware/createPost')
 
 app.use('/posts/store', storePost)
@@ -36,6 +42,8 @@ app.get("/posts/new", newPostController);
 app.post("/posts/create", newPostController);
 app.get("/auth/register", newUserController);
 app.post("/users/register", createUserController);
+app.get('/auth/login', loginController);
+app.post('/users/login', loginUserController);
 
 app.listen(4000, () => {
   console.log("App listening on port 4000");
