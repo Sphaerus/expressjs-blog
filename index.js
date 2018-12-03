@@ -7,6 +7,8 @@ const expressSession = require('express-session');
 const connectMongo = require('connect-mongo');
 const auth = require("./middleware/auth");
 const connectFlash = require("connect-flash");
+const edge = require("edge.js");
+
 
 const newPostController = require('./controllers/newPost')
 const homePageController = require('./controllers/homePage')
@@ -18,7 +20,7 @@ const loginController = require("./controllers/login");
 const loginUserController = require('./controllers/loginUser');
 const storePost = require('./middleware/createPost')
 const redirectIfAuthenticated = require('./middleware/redirectIfAuthenticated')
-
+const logoutController = require("./controllers/logout");
 
 const app = new express();
 
@@ -39,6 +41,10 @@ app.use(fileUpload());
 app.use(express.static("public"));
 app.use(expressEdge);
 app.set('views', __dirname + '/views');
+app.use('*', (req, res, next) => {
+    edge.global('auth', req.session.userId)
+    next()
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -58,6 +64,7 @@ app.get("/auth/register", redirectIfAuthenticated, newUserController);
 app.post("/users/register", redirectIfAuthenticated, createUserController);
 app.get('/auth/login', redirectIfAuthenticated, loginController);
 app.post('/users/login', redirectIfAuthenticated, loginUserController);
+app.get("/auth/logout", logoutController);
 
 app.listen(4000, () => {
   console.log("App listening on port 4000");
